@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'environment.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -79,11 +80,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  int increment;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
+    Firestore db = Firestore.instance;
+    db.collection("collection").document("counter").get().then((value) => increment = value["num"]);
+    
     setState(() {
-      _counter += ConfigReader.getIncrementAmount();
+      _counter += increment;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+   
+
+   
   }
 
   @override
