@@ -1,7 +1,35 @@
+import 'package:env_flutter/config_reader.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MyApp());
+import 'environment.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+Future<void> mainCommon(String env) async {
+  // Always call this if the main method is asynchronous
+  WidgetsFlutterBinding.ensureInitialized();
+  // Load the JSON config into memory 
+  await ConfigReader.initialize();
+
+  Color primaryColor;
+  switch (env) {
+    case Environment.dev:
+      primaryColor = Colors.blue;
+      break;
+    case Environment.prod:
+      primaryColor = Colors.red;
+      break;
+  }
+
+  runApp(
+    Provider.value(
+      value: primaryColor,
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +48,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Provider.of<Color>(context),
         // This makes the visual density adapt to the platform that you run
         // the app on. For desktop platforms, the controls will be smaller and
         // closer together (more dense) than on mobile platforms.
@@ -54,12 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _counter += ConfigReader.getIncrementAmount();
     });
   }
 
@@ -103,6 +126,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
+            ),
+            Text(
+              'Revealed secret:\n${ConfigReader.getSecretKey()}',
+              textAlign: TextAlign.center,
             ),
           ],
         ),
