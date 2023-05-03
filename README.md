@@ -1,6 +1,6 @@
 # env_flutter
 
-A new Flutter project.
+Experimenting with Flutter env
 
 ## Getting Started
 
